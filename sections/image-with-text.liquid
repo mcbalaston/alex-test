@@ -22,11 +22,7 @@
       >
         {%- if section.settings.image != blank -%}
           {%- capture sizes -%}(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 2 }}px, (min-width: 750px) calc((100vw - 130px) / 2), calc((100vw - 50px) / 2){%- endcapture -%}
-          {{ section.settings.image | image_url: width: 1500 | image_tag:
-            loading: 'lazy',
-            sizes: sizes,
-            widths: '165, 360, 535, 750, 1070, 1500'
-          }} 
+          <img id="hero-image" style="opacity: 0; transition: opacity 1s ease-in-out;" src="{{ section.settings.image | image_url: width: 1500 }}" alt="Hero Image" class="image-with-text__image" />
         {%- else -%}
           {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
         {%- endif -%}
@@ -56,6 +52,37 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const heroImage = document.getElementById('hero-image'); // Get the hero image element
+        // Unsplash API URL for a random image
+        const apiUrl = "https://api.unsplash.com/photos/random?client_id=Hy55idGuaOP2zLSVgDws9zRbm4d6z7pYU_vTO3MsGig";
+      
+        // Fetch a random image from Unsplash API
+        fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const randomImageUrl = data.urls.regular; // Get the image URL
+
+          // Replace the hero image with the Unsplash image
+          heroImage.src = randomImageUrl;
+
+          // Add a fade-in effect after the image is loaded
+          heroImage.style.opacity = 1; // Start with image hidden
+          heroImage.onload = function() {
+              heroImage.style.transition = "opacity 1s ease-in-out"; // Apply fade-in effect
+              heroImage.style.opacity = 1; // Fade in after loading
+          };
+            
+        })
+        .catch(error => {
+          console.error('Error fetching Unsplash image:', error);
+        });
+
+  });
+</script>
 
 {% schema %}
 {
